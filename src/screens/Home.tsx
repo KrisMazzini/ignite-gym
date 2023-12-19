@@ -59,6 +59,7 @@ export function Home() {
         )}
         my={10}
         _contentContainerStyle={{ px: 8 }}
+        minH={10}
         maxH={10}
       />
 
