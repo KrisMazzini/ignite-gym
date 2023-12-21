@@ -30,7 +30,7 @@ export function ExerciseCard({ name, ...props }: ExerciseCardProps) {
         />
 
         <VStack flex={1}>
-          <Heading fontSize="lg" color="white">
+          <Heading fontSize="lg" color="white" fontFamily="heading">
             {name}
           </Heading>
 
