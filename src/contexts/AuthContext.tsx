@@ -6,9 +6,14 @@ import { UserDTO } from '@dtos/UserDTO'
 import { AppError } from '@utils/AppError'
 
 import {
+  getAuthTokenStorage,
+  removeAuthTokenStorage,
+  saveAuthTokenStorage,
+} from '@storage/storageAuthToken'
+import {
+  saveUserStorage,
   getUserStorage,
   removeUserStorage,
-  saveUserStorage,
 } from '@storage/storageUser'
 
 type AuthContextProviderProps = {
@@ -32,23 +37,38 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   const toast = useToast()
 
+  async function updateUserAndToken(userData: UserDTO, token: string) {
+    api.defaults.headers.common.Authorization = `Bearer ${token}`
+    setUser(userData)
+  }
+
   async function signIn(email: string, password: string) {
     const { data } = await api.post('/sessions', {
       email,
       password,
     })
 
-    if (data.user) {
-      setUser(data.user)
-      saveUserStorage(data.user)
+    if (data.user && data.token) {
+      setIsLoadingUserStorageData(true)
+
+      await saveAuthTokenStorage(data.token)
+      await saveUserStorage(data.user)
+
+      updateUserAndToken(data.user, data.token)
     }
+
+    setIsLoadingUserStorageData(false)
   }
 
   async function signOut() {
     try {
       setIsLoadingUserStorageData(true)
+
       setUser({} as UserDTO)
+      api.defaults.headers.common.Authorization = ''
+
       await removeUserStorage()
+      await removeAuthTokenStorage()
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError
@@ -68,10 +88,13 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   useEffect(() => {
     async function loadUserData() {
       try {
-        const loggedUser = await getUserStorage()
+        setIsLoadingUserStorageData(true)
 
-        if (loggedUser) {
-          setUser(loggedUser)
+        const loggedUser = await getUserStorage()
+        const token = await getAuthTokenStorage()
+
+        if (loggedUser && token) {
+          updateUserAndToken(loggedUser, token)
         }
       } catch (error) {
         const isAppError = error instanceof AppError
