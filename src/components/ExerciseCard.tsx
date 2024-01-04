@@ -2,11 +2,14 @@ import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 import { HStack, Heading, Icon, Image, Text, VStack } from 'native-base'
 import { Entypo } from '@expo/vector-icons'
 
+import { api } from '@services/api'
+import { ExerciseDTO } from '@dtos/ExerciseDTO'
+
 interface ExerciseCardProps extends TouchableOpacityProps {
-  name: string
+  data: ExerciseDTO
 }
 
-export function ExerciseCard({ name, ...props }: ExerciseCardProps) {
+export function ExerciseCard({ data, ...props }: ExerciseCardProps) {
   return (
     <TouchableOpacity {...props}>
       <HStack
@@ -19,7 +22,7 @@ export function ExerciseCard({ name, ...props }: ExerciseCardProps) {
       >
         <Image
           source={{
-            uri: 'https://www.smartfit.com.br/news/wp-content/uploads/2016/06/supino-reto.jpg',
+            uri: `${api.defaults.baseURL}/exercise/thumb/${data.thumb}`,
           }}
           alt="Imagem do exercício"
           w={16}
@@ -31,11 +34,11 @@ export function ExerciseCard({ name, ...props }: ExerciseCardProps) {
 
         <VStack flex={1}>
           <Heading fontSize="lg" color="white" fontFamily="heading">
-            {name}
+            {data.name}
           </Heading>
 
           <Text fontSize="sm" color="gray.200" mt={1} numberOfLines={2}>
-            3 séries x 12 repetições
+            {data.series} séries x {data.repetitions} repetições
           </Text>
         </VStack>
 
