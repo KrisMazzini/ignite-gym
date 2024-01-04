@@ -21,6 +21,7 @@ import { useAuth } from '@hooks/useAuth'
 import LogoSvg from '@assets/logo.svg'
 import BackgroundImg from '@assets/background.png'
 
+import { KeyboardAvoidingView } from '@components/KeyboardAvoidingView'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
@@ -93,103 +94,105 @@ export function SignUp() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <VStack flex={1} px={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Pessoas treinando na bicicleta"
-          resizeMode="contain"
-          position="absolute"
-        />
-
-        <Center my={24}>
-          <LogoSvg />
-
-          <Text color="gray.100" fontSize="sm">
-            Treine sua mente e o seu corpo
-          </Text>
-        </Center>
-
-        <Center>
-          <Heading color="gray.100" fontFamily="heading" fontSize="xl" mb={6}>
-            Crie sua conta
-          </Heading>
-
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <Input
-                placeholder="Nome"
-                value={field.value}
-                onChangeText={field.onChange}
-                errorMessage={errors.name?.message}
-              />
-            )}
+    <KeyboardAvoidingView>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <VStack flex={1} px={10}>
+          <Image
+            source={BackgroundImg}
+            defaultSource={BackgroundImg}
+            alt="Pessoas treinando na bicicleta"
+            resizeMode="contain"
+            position="absolute"
           />
 
-          <Controller
-            control={control}
-            name="email"
-            render={({ field }) => (
-              <Input
-                placeholder="E-mail"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={field.value}
-                onChangeText={field.onChange}
-                errorMessage={errors.email?.message}
-              />
-            )}
-          />
+          <Center my={24}>
+            <LogoSvg />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <Input
-                placeholder="Senha"
-                secureTextEntry
-                value={field.value}
-                onChangeText={field.onChange}
-                errorMessage={errors.password?.message}
-              />
-            )}
-          />
+            <Text color="gray.100" fontSize="sm">
+              Treine sua mente e o seu corpo
+            </Text>
+          </Center>
 
-          <Controller
-            control={control}
-            name="passwordConfirm"
-            render={({ field }) => (
-              <Input
-                placeholder="Confirme a senha"
-                secureTextEntry
-                value={field.value}
-                onChangeText={field.onChange}
-                onSubmitEditing={handleSubmit(handleSignUp)}
-                errorMessage={errors.passwordConfirm?.message}
-              />
-            )}
-          />
+          <Center>
+            <Heading color="gray.100" fontFamily="heading" fontSize="xl" mb={6}>
+              Crie sua conta
+            </Heading>
+
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  placeholder="Nome"
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  errorMessage={errors.name?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="passwordConfirm"
+              render={({ field }) => (
+                <Input
+                  placeholder="Confirme a senha"
+                  secureTextEntry
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  onSubmitEditing={handleSubmit(handleSignUp)}
+                  errorMessage={errors.passwordConfirm?.message}
+                />
+              )}
+            />
+
+            <Button
+              title="Criar e acessar"
+              isLoading={isLoading}
+              onPress={handleSubmit(handleSignUp)}
+            />
+          </Center>
 
           <Button
-            title="Criar e acessar"
-            isLoading={isLoading}
-            onPress={handleSubmit(handleSignUp)}
+            title="Voltar para o login"
+            variant="outline"
+            mt={12}
+            onPress={handleGoBack}
           />
-        </Center>
-
-        <Button
-          title="Voltar para o login"
-          variant="outline"
-          mt={12}
-          onPress={handleGoBack}
-        />
-      </VStack>
-    </ScrollView>
+        </VStack>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }

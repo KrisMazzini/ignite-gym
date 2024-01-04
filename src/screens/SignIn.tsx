@@ -21,6 +21,7 @@ import { useAuth } from '@hooks/useAuth'
 import LogoSvg from '@assets/logo.svg'
 import BackgroundImg from '@assets/background.png'
 
+import { KeyboardAvoidingView } from '@components/KeyboardAvoidingView'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
@@ -78,78 +79,80 @@ export function SignIn() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <VStack flex={1} px={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Pessoas treinando na bicicleta"
-          resizeMode="contain"
-          position="absolute"
-        />
-
-        <Center my={24}>
-          <LogoSvg />
-
-          <Text color="gray.100" fontSize="sm">
-            Treine sua mente e o seu corpo
-          </Text>
-        </Center>
-
-        <Center>
-          <Heading color="gray.100" fontFamily="heading" fontSize="xl" mb={6}>
-            Acesse sua conta
-          </Heading>
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field }) => (
-              <Input
-                placeholder="E-mail"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                onChangeText={field.onChange}
-                errorMessage={errors.email?.message}
-              />
-            )}
+    <KeyboardAvoidingView>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <VStack flex={1} px={10}>
+          <Image
+            source={BackgroundImg}
+            defaultSource={BackgroundImg}
+            alt="Pessoas treinando na bicicleta"
+            resizeMode="contain"
+            position="absolute"
           />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <Input
-                placeholder="Senha"
-                secureTextEntry
-                onChangeText={field.onChange}
-                errorMessage={errors.password?.message}
-              />
-            )}
-          />
+          <Center my={24}>
+            <LogoSvg />
 
-          <Button
-            title="Acessar"
-            onPress={handleSubmit(handleSignIn)}
-            isLoading={isLoading}
-          />
-        </Center>
+            <Text color="gray.100" fontSize="sm">
+              Treine sua mente e o seu corpo
+            </Text>
+          </Center>
 
-        <Center mt={24}>
-          <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">
-            Ainda não tem acesso?
-          </Text>
+          <Center>
+            <Heading color="gray.100" fontFamily="heading" fontSize="xl" mb={6}>
+              Acesse sua conta
+            </Heading>
 
-          <Button
-            title="Criar conta"
-            variant="outline"
-            onPress={handleNewAccount}
-          />
-        </Center>
-      </VStack>
-    </ScrollView>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={field.onChange}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  onChangeText={field.onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Button
+              title="Acessar"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
+          </Center>
+
+          <Center mt={24}>
+            <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">
+              Ainda não tem acesso?
+            </Text>
+
+            <Button
+              title="Criar conta"
+              variant="outline"
+              onPress={handleNewAccount}
+            />
+          </Center>
+        </VStack>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
