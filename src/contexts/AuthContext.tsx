@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import { ReactNode, createContext, useEffect, useRef, useState } from 'react'
 import { useToast } from 'native-base'
 
 import { api } from '@services/api'
@@ -36,6 +36,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true)
 
   const toast = useToast()
+  const toastRef = useRef(toast)
 
   async function updateUserAndToken(userData: UserDTO, token: string) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`
@@ -102,7 +103,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
           ? error.message
           : 'Erro ao fazer login. Tente novamente mais tarde.'
 
-        toast.show({
+        toastRef.current.show({
           title,
           placement: 'top',
           bgColor: 'red.500',
@@ -113,7 +114,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
 
     loadUserData()
-  }, [toast])
+  }, [])
 
   return (
     <AuthContext.Provider

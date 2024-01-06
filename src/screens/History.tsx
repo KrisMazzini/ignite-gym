@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Heading, SectionList, Text, VStack, useToast } from 'native-base'
 
@@ -15,6 +15,7 @@ export function History() {
   const [exercises, setExercises] = useState<HistoryByDayDTO[]>([])
 
   const toast = useToast()
+  const toastRef = useRef(toast)
 
   useFocusEffect(
     useCallback(() => {
@@ -30,7 +31,7 @@ export function History() {
             ? error.message
             : 'Não foi possível carregar o histórico.'
 
-          toast.show({
+          toastRef.current.show({
             title,
             placement: 'top',
             bgColor: 'red.500',
@@ -41,7 +42,7 @@ export function History() {
       }
 
       fetchHistory()
-    }, [toast]),
+    }, []),
   )
 
   return (

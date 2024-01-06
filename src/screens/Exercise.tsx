@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   useFocusEffect,
   useNavigation,
@@ -41,7 +41,9 @@ export function Exercise() {
 
   const route = useRoute()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
+
   const toast = useToast()
+  const toastRef = useRef(toast)
 
   const { exerciseId } = route.params as RouteParamsProps
 
@@ -91,7 +93,7 @@ export function Exercise() {
             ? error.message
             : 'Não foi possível carregar os exercícios.'
 
-          toast.show({
+          toastRef.current.show({
             title,
             placement: 'top',
             bgColor: 'red.500',
@@ -102,7 +104,7 @@ export function Exercise() {
       }
 
       fetchExerciseDetails()
-    }, [toast, exerciseId]),
+    }, [exerciseId]),
   )
 
   return (

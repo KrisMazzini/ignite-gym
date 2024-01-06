@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { FlatList, HStack, Heading, Text, VStack, useToast } from 'native-base'
 
@@ -22,6 +22,8 @@ export function Home() {
   const toast = useToast()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
+  const toastRef = useRef(toast)
+
   function handleOpenExerciseDetails(exerciseId: number) {
     navigation.navigate('exercise', { exerciseId })
   }
@@ -37,7 +39,7 @@ export function Home() {
           ? error.message
           : 'Não foi possível carregar os grupos musculares.'
 
-        toast.show({
+        toastRef.current.show({
           title,
           placement: 'top',
           bgColor: 'red.500',
@@ -46,7 +48,7 @@ export function Home() {
     }
 
     fetchGroups()
-  }, [toast])
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
@@ -62,7 +64,7 @@ export function Home() {
             ? error.message
             : 'Não foi possível carregar os exercícios.'
 
-          toast.show({
+          toastRef.current.show({
             title,
             placement: 'top',
             bgColor: 'red.500',
@@ -73,7 +75,7 @@ export function Home() {
       }
 
       fetchExercisesByGroup()
-    }, [toast, selectedGroup]),
+    }, [selectedGroup]),
   )
 
   return (
