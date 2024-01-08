@@ -19,8 +19,9 @@ import * as FileSystem from 'expo-file-system'
 
 import { AppError } from '@utils/AppError'
 import { api } from '@services/api'
-
 import { useAuth } from '@hooks/useAuth'
+
+import defaultUserPhotoImg from '@assets/userPhotoDefault.png'
 
 import { KeyboardAvoidingView } from '@components/KeyboardAvoidingView'
 import { ScreenHeader } from '@components/ScreenHeader'
@@ -60,9 +61,6 @@ type FormDataProps = z.infer<typeof profileFormValidationSchema>
 export function Profile() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [photoHasLoaded, setPhotoHasLoaded] = useState(true)
-  const [userPhoto, setUserPhoto] = useState<string | undefined>(
-    'https://github.com/krismazzini.png',
-  )
 
   const { user, updateUserProfile } = useAuth()
   const toast = useToast()
@@ -112,10 +110,50 @@ export function Profile() {
           })
         }
 
-        setUserPhoto(selectedPhoto.assets[0].uri)
+        const fileExtension = uri.split('.').pop()
+
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`.toLowerCase(),
+          uri,
+          type: `${selectedPhoto.assets[0].type}/${fileExtension}`,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any
+
+        const userPhotoUploadForm = new FormData()
+        userPhotoUploadForm.append('avatar', photoFile)
+
+        const avatarResponse = await api.patch(
+          '/users/avatar',
+          userPhotoUploadForm,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        )
+
+        updateUserProfile({
+          ...user,
+          avatar: avatarResponse.data.avatar,
+        })
+
+        toast.show({
+          title: 'Foto atualizada!',
+          placement: 'top',
+          bgColor: 'green.700',
+        })
       }
     } catch (error) {
-      console.log(error)
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível atualizar a foto.'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     } finally {
       setPhotoHasLoaded(true)
     }
@@ -180,7 +218,14 @@ export function Profile() {
               endColor="gray.400"
               isLoaded={photoHasLoaded}
             >
-              <UserPhoto source={{ uri: userPhoto }} size={PHOTO_SIZE} />
+              <UserPhoto
+                source={
+                  user.avatar
+                    ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                    : defaultUserPhotoImg
+                }
+                size={PHOTO_SIZE}
+              />
             </Skeleton>
 
             <TouchableOpacity onPress={handleUserPhotoSelect}>
