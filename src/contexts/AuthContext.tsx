@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useEffect, useRef, useState } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useToast } from 'native-base'
 
 import { api } from '@services/api'
@@ -50,10 +57,14 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       password,
     })
 
-    if (data.user && data.token) {
+    if (data.user && data.token && data.refresh_token) {
       setIsLoadingUserStorageData(true)
 
-      await saveAuthTokenStorage(data.token)
+      await saveAuthTokenStorage({
+        token: data.token,
+        refresh_token: data.refresh_token,
+      })
+
       await saveUserStorage(data.user)
 
       updateUserAndToken(data.user, data.token)
@@ -62,7 +73,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     setIsLoadingUserStorageData(false)
   }
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     try {
       setIsLoadingUserStorageData(true)
 
@@ -77,7 +88,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         ? error.message
         : 'Erro ao fazer logout. Tente novamente mais tarde.'
 
-      toast.show({
+      toastRef.current.show({
         title,
         placement: 'top',
         bgColor: 'red.500',
@@ -85,7 +96,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     } finally {
       setIsLoadingUserStorageData(false)
     }
-  }
+  }, [])
 
   async function updateUserProfile(updatedUser: UserDTO) {
     setUser(updatedUser)
@@ -98,7 +109,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         setIsLoadingUserStorageData(true)
 
         const loggedUser = await getUserStorage()
-        const token = await getAuthTokenStorage()
+        const { token } = await getAuthTokenStorage()
 
         if (loggedUser && token) {
           updateUserAndToken(loggedUser, token)
@@ -121,6 +132,12 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
     loadUserData()
   }, [])
+
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut)
+
+    return () => subscribe()
+  }, [signOut])
 
   return (
     <AuthContext.Provider
